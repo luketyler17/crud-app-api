@@ -141,6 +141,6 @@ app.post('/inventory/additem', (req, res) => {
 
 
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
     console.log(`Listening for server on Port: ${port}`)
 })
