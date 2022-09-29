@@ -32,8 +32,6 @@ app.post('/users/login', (req, res) => {
 
 app.post('/users', (req, res) => {
     console.log(req.body)
-    const salt = bcrypt.genSalt();
-    const passwordHash = bcrypt.hash(req.body.password, salt);
     if (req.body.PasswordHash != undefined && req.body.Username != undefined) {
         knex('users')
             .insert({
