@@ -36,7 +36,7 @@ app.post('/users', (req, res) => {
         knex
             .select('*')
             .from('users')
-            .where('Usename', req.body.Username)
+            .where('Username', req.body.Username)
             .then(data => {
                 if (data.length > 0) {
                     res.status(404).send({ message: "Entry already exists" })
