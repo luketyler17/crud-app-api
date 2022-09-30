@@ -38,11 +38,8 @@ app.post('/users', (req, res) => {
             .from('users')
             .where('Username', req.body.Username)
             .then(data => {
-                if (data.length > 0) {
-                    console.log(data)
-                    res.status(404).send({ message: "Entry already exists" })
-                } else {
-                    knex('users')
+                if (data.length === 0) {
+                    return knex('users')
                         .insert({
                             FirstName: req.body.FirstName,
                             LastName: req.body.LastName,
@@ -51,6 +48,9 @@ app.post('/users', (req, res) => {
                         })
                         .then(() => res.status(201).send({ success: true }))
                         .catch(err => res.status(406).send(err))
+                } else {
+                    console.log(data)
+                    res.status(404).send({ message: "Entry already exists" })
                 }
             })
     }
