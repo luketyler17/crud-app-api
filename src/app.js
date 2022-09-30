@@ -5,7 +5,7 @@ const port = 8080;
 const cors = require('cors');
 const { Knex } = require('knex');
 const bcrypt = require('bcryptjs');
-
+const { useState } = require('react');
 
 
 app.use(cors());
@@ -30,33 +30,30 @@ app.post('/users/login', (req, res) => {
     }
 })
 
-app.post('/users', (req, res) => {
-    console.log(req.body)
-    if (req.body.PasswordHash != undefined && req.body.Username != undefined) {
-        knex
-            .select('*')
-            .from('users')
-            .where('Username', req.body.Username)
-            .then(data => {
-                if (data.length === 0) {
-                    return knex('users')
-                        .insert({
-                            FirstName: req.body.FirstName,
-                            LastName: req.body.LastName,
-                            Username: req.body.Username,
-                            PasswordHash: req.body.PasswordHash
-                        })
-                        .then(() => res.status(201).send({ success: true }))
-                        .catch(err => res.status(406).send(err))
-                } else {
-                    console.log(data)
-                    res.status(404).send({ message: "Entry already exists" })
-                }
-            })
-    }
-    else {
-        res.status(503).send("Password Incorrect")
-    }
+app.post('/users', async (req, res) => {
+    let outsideData = undefined
+    var flag = 0
+    knex
+        .select('*')
+        .from('users')
+        .where('Username', req.body.Username)
+        .then(data => outsideData = data).then(() => {
+            console.log(flag);
+            console.log(outsideData)
+            if (req.body.PasswordHash !== undefined && req.body.Username !== undefined && outsideData.length <= 0) {
+                knex('users')
+                    .insert({
+                        FirstName: req.body.FirstName,
+                        LastName: req.body.LastName,
+                        Username: req.body.Username,
+                        PasswordHash: req.body.PasswordHash
+                    })
+                    .then(() => res.status(201).send({ success: true }))
+                    .catch(err => res.status(406).send(err))
+            } else {
+                res.status(404).send({ message: "Entry already exists" })
+            }
+        })
 })
 
 app.get('/users', (req, res) => {

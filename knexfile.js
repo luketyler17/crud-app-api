@@ -6,11 +6,22 @@ let connectionString = process.env.DATABASE_URL;
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 
+//  development: {
+//   client: "pg",
+//   connection: connectionString,
+// },
+
 //he changed dev connection to connectionString also
 module.exports = {
   development: {
-    client: "pg",
-    connection: connectionString,
+    client: 'postgresql',
+    connection: {
+      host: '127.0.0.1',
+      password: 'docker',
+      user: 'postgres',
+      port: 5432,
+      database: 'capstone'
+      }
   },
 
   staging: {
