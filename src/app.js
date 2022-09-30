@@ -5,6 +5,7 @@ const port = 8080;
 const cors = require('cors');
 const { Knex } = require('knex');
 const bcrypt = require('bcryptjs');
+const { red } = require('@material-ui/core/colors');
 
 
 
@@ -33,15 +34,25 @@ app.post('/users/login', (req, res) => {
 app.post('/users', (req, res) => {
     console.log(req.body)
     if (req.body.PasswordHash != undefined && req.body.Username != undefined) {
-        knex('users')
-            .insert({
-                FirstName: req.body.FirstName,
-                LastName: req.body.LastName,
-                Username: req.body.Username,
-                PasswordHash: req.body.PasswordHash
+        knex
+            .select('*')
+            .from('users')
+            .where('Usename', req.body.Username)
+            .then(data => {
+                if (data.length > 0) {
+                    res.status(404).send({ message: "Entry already exists" })
+                } else {
+                    knex('users')
+                        .insert({
+                            FirstName: req.body.FirstName,
+                            LastName: req.body.LastName,
+                            Username: req.body.Username,
+                            PasswordHash: req.body.PasswordHash
+                        })
+                        .then(data => res.status(201).send({ success: true }))
+                        .catch(err => res.status(406).send(err))
+                }
             })
-            .then(data => res.status(201).send({ success: true }))
-            .catch(err => res.status(406).send(err))
     } else {
         res.status(200).send("Password Incorrect")
     }
@@ -66,15 +77,15 @@ app.get('/inventory', (req, res) => {
 
 app.post('/inventory/seeitem', (req, res) => {
     console.log(req.body)
-    if(req.body.UserId) {
-    knex
-        .select('*')
-        .from('item')
-        .where('UserId', parseInt(req.body.UserId))
-        .then(data => res.status(200).send(data))
-        .catch(err => res.status(503).send(err))
+    if (req.body.UserId) {
+        knex
+            .select('*')
+            .from('item')
+            .where('UserId', parseInt(req.body.UserId))
+            .then(data => res.status(200).send(data))
+            .catch(err => res.status(503).send(err))
     } else {
-        res.status(404).send({err: "UserID not sent"})
+        res.status(404).send({ err: "UserID not sent" })
     }
 })
 
@@ -88,9 +99,10 @@ app.patch('/inventory', (req, res) => {
         .where('UserId', parseInt(req.body.UserId))
         .andWhere('ItemName', req.body.ItemName)
         .update({
-            Description: req.body.Description, 
-            Quantity: parseInt(req.body.Quantity)})
-        .then(data => res.status(201).send({success: true}))
+            Description: req.body.Description,
+            Quantity: parseInt(req.body.Quantity)
+        })
+        .then(data => res.status(201).send({ success: true }))
         .catch(err => res.status(404).send(err))
 })
 
@@ -104,7 +116,7 @@ app.delete('/inventory', (req, res) => {
         .where('UserId', parseInt(req.body.UserId))
         .andWhere('ItemName', req.body.ItemName)
         .del()
-        .then(() => res.status(201).send({success: true}))
+        .then(() => res.status(201).send({ success: true }))
         .catch((err) => res.status(404).send(err))
 })
 
