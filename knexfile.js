@@ -1,6 +1,6 @@
 // Update with your config settings.
 require("dotenv").config();
-
+//adding stuff
 let connectionString = process.env.DATABASE_URL;
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
