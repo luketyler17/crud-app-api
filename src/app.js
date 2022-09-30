@@ -41,18 +41,20 @@ app.post('/users', (req, res) => {
                 if (data.length > 0) {
                     console.log(data)
                     res.status(404).send({ message: "Entry already exists" })
-                } else {
-                    knex('users')
-                        .insert({
-                            FirstName: req.body.FirstName,
-                            LastName: req.body.LastName,
-                            Username: req.body.Username,
-                            PasswordHash: req.body.PasswordHash
-                        })
-                        .then(data => res.status(201).send({ success: true }))
-                        .catch(err => res.status(406).send(err))
+                } else{
+                    return
                 }
-            })
+                }).then(() => {
+                        knex('users')
+                            .insert({
+                                FirstName: req.body.FirstName,
+                                LastName: req.body.LastName,
+                                Username: req.body.Username,
+                                PasswordHash: req.body.PasswordHash
+                            })
+                            .then(() => res.status(201).send({ success: true }))
+                            .catch(err => res.status(406).send(err))
+                })
     } else {
         res.status(200).send("Password Incorrect")
     }
