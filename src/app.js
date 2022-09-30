@@ -39,6 +39,7 @@ app.post('/users', (req, res) => {
             .where('Username', req.body.Username)
             .then(data => {
                 if (data.length > 0) {
+                    console.log(data)
                     res.status(404).send({ message: "Entry already exists" })
                 } else {
                     knex('users')
